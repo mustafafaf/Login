@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import requests
 import json
 
@@ -30,7 +30,29 @@ def verify():
                 return "wrong password"
             
         return "username not found"
+    
 
+@app.route("/signup", methods=["GET"])
+def signup():
+    return render_template("signup.html")
+
+@app.route("/register", methods=["POST"])
+def register():
+    if request.method=="POST":
+        formdata=request.form
+        with open("users.json","r+") as f:
+
+            archive=json.load(f)
+            archive[formdata["username"]]={
+                "password":formdata["password"],
+                "email":formdata["email"],
+                "name":formdata["name"]
+            }
+            f.seek(0)
+            json.dump(archive,f,indent=4)
+
+
+        return redirect("/")
        
 
 

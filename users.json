@@ -1,7 +1,12 @@
 {
-    "username":{
-        "password":"1234",
-        "name":"mustafa farooqi",
-        "email":"mustafaf38@outlook.com"
+    "username": {
+        "password": "1234",
+        "name": "mustafa farooqi",
+        "email": "mustafaf38@outlook.com"
+    },
+    "me": {
+        "password": "12345",
+        "email": "mansoorfarooqi101@gmail.com",
+        "name": "Mustafa Farooqi"
     }
 }
