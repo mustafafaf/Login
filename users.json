@@ -8,5 +8,10 @@
         "password": "12345",
         "email": "mansoorfarooqi101@gmail.com",
         "name": "Mustafa Farooqi"
+    },
+    "kakarot": {
+        "password": "vegeta",
+        "email": "goku@dragon.com",
+        "name": "son goku"
     }
 }
