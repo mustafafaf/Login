@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import requests
-import json
-
+import csv
+import pandas as pd
 app = Flask(__name__)
 
 #renders login page
@@ -15,17 +15,17 @@ def verify():
     if request.method=="POST":
 
         formdata=request.form
-        #opens json file
-        with open("users.json","r") as f:
-            archive=json.load(f)    
-
-        
-        for i in archive.keys():
-            if formdata["username"]==i:
-                if formdata["password"]==archive[i]["password"]:
-                    return "verified"
-                return "wrong password"
-            
+        #opens csv file and copies to archive
+        with open("users.csv","r") as f:
+            archive=pd.read_csv(f,index_col=0)   
+ 
+        #this code checks that username and password are in the system
+        #formdata["username"] is entered username
+        #formdata["password"] is entered password
+        if formdata["username"] in archive.index:
+            if archive.loc[formdata["username"]].loc['password']==formdata["password"]:
+                return "verified"
+            return "wrong password"
         return "username not found"
     
 #renders signup page
@@ -38,25 +38,24 @@ def signup():
 def register():
     if request.method=="POST":
         formdata=request.form
+        
+        with open("users.csv","r+") as f:  
+            #loads csv file into object
+            archive=pd.read_csv(f,index_col=0) 
+        #checks details aren't already in use
+        if formdata["username"] in archive.index:
+            return render_template("signup.html",error="username already in use")
+        if formdata["email"] in set(archive["email"]):
+            return render_template("signup.html",error="email already in use")
 
-        with open("users.json","r+") as f:  
-            #loads json file into object
-            archive=json.load(f)
-            #checks details aren't already in use
-            for i in archive.keys():
-                if formdata["username"]==i:
-                    return render_template("signup.html",error="username already in use")
-                if formdata["email"]==archive[i]["email"]:
-                    return render_template("signup.html",error="email already in use")
-            #adds new details to object
-            archive[formdata["username"]]={
-                "password":formdata["password"],
-                "email":formdata["email"],
-                "name":formdata["name"]
-            }
-            f.seek(0)
-            #writes data to json
-            json.dump(archive,f,indent=4)
+        #writes data to csv
+        with open("users.csv","a") as f:
+            details=[formdata["username"],formdata["name"],formdata["password"],formdata["email"]]
+            writer=csv.writer(f)
+            writer.writerow(details)
+
+            #writes data to csv
+            
 
 
         return redirect("/")
